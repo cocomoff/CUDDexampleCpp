@@ -17,26 +17,24 @@ int main() {
   const int N = 4;
   vector<BDD> X(N);
   for (int i = 0; i < N; i++)
-    X[i] = mgr.bddZero();
+    X[i] = mgr.bddVar();
 
   BDD f = mgr.bddZero();
   for (int i = 0; i < (1 << N); i++) {
     int bj = bin(mt);
     if (bj == 1) {
       BDD termi = mgr.bddOne();
-      for (int k = 0; k < N; k++) {
-        if (bj & (1 << k))
-          termi &= X[k];
-        else
-          termi &= !X[k];
-      }
+      for (int k = 0; k < N; k++)
+        termi &= (i & (1 << k)) ? X[k] : !X[k];
       f |= termi;
     }
   }
 
-  // dump
-  const vector<BDD> vec = {f};
+  // dot dump
+  const vector<ADD> vec = {f.Add()};
   auto fp = fopen("dot/random.dot", "w");
-  mgr.DumpDot(vec, NULL, NULL, fp);
+  const char* iname[4] = {"x1", "x2", "x3", "x4"};
+  const char* oname[1] = {"F"};
+  mgr.DumpDot(vec, iname, oname, fp);
   return 0;
 }
